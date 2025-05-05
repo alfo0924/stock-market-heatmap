@@ -1,98 +1,165 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <th:block th:fragment="links">
-        <link rel="stylesheet" th:href="@{/css/heatmap.css}">
-    </th:block>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Heatmap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/heatmap.css}">
+    <!-- 確保D3.js正確加載 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* 修復容器寬度問題 */
+        #heatmap-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 確保圖表不會超出容器 */
+        svg {
+            max-width: 100%;
+        }
+
+        /* 修復響應式布局 */
+        @media (max-width: 768px) {
+            .legend-item {
+                margin-bottom: 8px;
+            }
+            .d-flex.justify-content-between {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
-<th:block th:fragment="content">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Stock Market Heatmap</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <div class="btn-group me-2">
-                <button type="button" id="viewBySector" class="btn btn-sm btn-outline-secondary active">By Sector</button>
-                <button type="button" id="viewByPerformance" class="btn btn-sm btn-outline-secondary">By Performance</button>
-            </div>
-            <div class="btn-group me-2">
-                <button type="button" id="zoomIn" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-in"></i></button>
-                <button type="button" id="zoomOut" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-out"></i></button>
-                <button type="button" id="resetZoom" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></button>
-            </div>
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">Stock Market Analysis</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+            <span class="nav-link px-3 text-white">May 5, 2025</span>
         </div>
     </div>
+</header>
 
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div id="heatmap-container">
-                        <div id="tooltip" class="tooltip">
-                            <div class="tooltip-header"></div>
-                            <div class="tooltip-body"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Legend
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/' ? 'active' : ''}" href="/">
+                            <i class="bi bi-house-door"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/dashboard' ? 'active' : ''}" href="/dashboard">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:classappend="${#httpServletRequest.getRequestURI() == '/heatmap' ? 'active' : ''}" href="/heatmap">
+                            <i class="bi bi-grid-3x3-gap"></i> Heatmap
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Stock Market Heatmap</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" id="viewBySector" class="btn btn-sm btn-outline-secondary active">By Sector</button>
+                        <button type="button" id="viewByPerformance" class="btn btn-sm btn-outline-secondary">By Performance</button>
+                    </div>
+                    <div class="btn-group me-2">
+                        <button type="button" id="zoomIn" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-in"></i></button>
+                        <button type="button" id="zoomOut" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-out"></i></button>
+                        <button type="button" id="resetZoom" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></button>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #d73027;"></div>
-                            <span>-5% or worse</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #fc8d59;"></div>
-                            <span>-2.5% to -5%</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #fee090;"></div>
-                            <span>-1% to -2.5%</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #ffffbf;"></div>
-                            <span>-1% to +1%</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #e0f3f8;"></div>
-                            <span>+1% to +2.5%</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #91bfdb;"></div>
-                            <span>+2.5% to +5%</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color" style="background-color: #4575b4;"></div>
-                            <span>+5% or better</span>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="heatmap-container">
+                                <div id="tooltip" class="tooltip">
+                                    <div class="tooltip-header"></div>
+                                    <div class="tooltip-body"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    Size Representation
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Legend
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #d73027;"></div>
+                                    <span>-5% or worse</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #fc8d59;"></div>
+                                    <span>-2.5% to -5%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #fee090;"></div>
+                                    <span>-1% to -2.5%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ffffbf;"></div>
+                                    <span>-1% to +1%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #e0f3f8;"></div>
+                                    <span>+1% to +2.5%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #91bfdb;"></div>
+                                    <span>+2.5% to +5%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #4575b4;"></div>
+                                    <span>+5% or better</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p>The size of each rectangle represents the market capitalization of the stock or sector.</p>
-                    <p>Larger rectangles indicate higher market cap stocks or sectors.</p>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            Size Representation
+                        </div>
+                        <div class="card-body">
+                            <p>The size of each rectangle represents the market capitalization of the stock or sector.</p>
+                            <p>Larger rectangles indicate higher market cap stocks or sectors.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-</th:block>
+</div>
 
-<th:block th:fragment="scripts">
-    <script th:src="@{/js/heatmap.js}"></script>
-</th:block>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/heatmap.js}"></script>
 </body>
 </html>

@@ -8,7 +8,32 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/heatmap.css}">
+    <!-- 確保D3.js正確加載 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* 修復容器寬度問題 */
+        #heatmap-container {
+            width: 100%;
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 確保圖表不會超出容器 */
+        svg {
+            max-width: 100%;
+        }
+
+        /* 修復響應式布局 */
+        @media (max-width: 768px) {
+            .legend-item {
+                margin-bottom: 8px;
+            }
+            .d-flex.justify-content-between {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -85,7 +110,7 @@
                             Legend
                         </div>
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
                                 <div class="legend-item">
                                     <div class="legend-color" style="background-color: #d73027;"></div>
                                     <span>-5% or worse</span>

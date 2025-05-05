@@ -7,7 +7,31 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <!-- 確保Chart.js正確加載 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 修復圖表容器高度問題 */
+        canvas {
+            max-width: 100%;
+        }
+
+        /* 確保圖表容器有適當的高度 */
+        .card-body {
+            min-height: 100px;
+        }
+
+        /* 修復響應式布局 */
+        @media (max-width: 768px) {
+            .row {
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+            .col-md-4, .col-md-6, .col-md-8 {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+    </style>
 </head>
 <body>
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -62,10 +86,12 @@
 
             <div class="row mb-4">
                 <div class="col-md-8">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title">Market Performance</h5>
-                            <canvas id="marketPerformanceChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="marketPerformanceChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,7 +106,9 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Sector Performance</h5>
-                            <canvas id="sectorPerformanceChart" height="200"></canvas>
+                            <div style="position: relative; height: 200px;">
+                                <canvas id="sectorPerformanceChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,7 +116,7 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-header">
                             Top Gainers
                         </div>
@@ -117,12 +145,14 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-header">
                             Market Cap Distribution
                         </div>
                         <div class="card-body">
-                            <canvas id="marketCapChart" height="250"></canvas>
+                            <div style="position: relative; height: 250px;">
+                                <canvas id="marketCapChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
