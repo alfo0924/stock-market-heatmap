@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="links">
+        <link rel="stylesheet" th:href="@{/css/heatmap.css}">
+    </th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Stock Market Heatmap</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button type="button" id="viewBySector" class="btn btn-sm btn-outline-secondary active">By Sector</button>
+                <button type="button" id="viewByPerformance" class="btn btn-sm btn-outline-secondary">By Performance</button>
+            </div>
+            <div class="btn-group me-2">
+                <button type="button" id="zoomIn" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-in"></i></button>
+                <button type="button" id="zoomOut" class="btn btn-sm btn-outline-secondary"><i class="bi bi-zoom-out"></i></button>
+                <button type="button" id="resetZoom" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div id="heatmap-container">
+                        <div id="tooltip" class="tooltip">
+                            <div class="tooltip-header"></div>
+                            <div class="tooltip-body"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Legend
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #d73027;"></div>
+                            <span>-5% or worse</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fc8d59;"></div>
+                            <span>-2.5% to -5%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fee090;"></div>
+                            <span>-1% to -2.5%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffffbf;"></div>
+                            <span>-1% to +1%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #e0f3f8;"></div>
+                            <span>+1% to +2.5%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #91bfdb;"></div>
+                            <span>+2.5% to +5%</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #4575b4;"></div>
+                            <span>+5% or better</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Size Representation
+                </div>
+                <div class="card-body">
+                    <p>The size of each rectangle represents the market capitalization of the stock or sector.</p>
+                    <p>Larger rectangles indicate higher market cap stocks or sectors.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/heatmap.js}"></script>
+</th:block>
+</body>
+</html>

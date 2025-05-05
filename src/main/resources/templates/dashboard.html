@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="links"></th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                <i class="bi bi-calendar3"></i> May 5, 2025
+            </button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Market Performance</h5>
+                    <canvas id="marketPerformanceChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Average Change</h5>
+                    <h2 th:text="${#numbers.formatDecimal(marketSummary.averageDailyChange * 100, 1, 2) + '%'}"
+                        th:class="${marketSummary.averageDailyChange >= 0 ? 'text-success' : 'text-danger'}">+1.23%</h2>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Sector Performance</h5>
+                    <canvas id="sectorPerformanceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Top Gainers
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stock : ${marketSummary.topGainers}">
+                                <td th:text="${stock.symbol}">AAPL</td>
+                                <td th:text="${stock.name}">Apple Inc.</td>
+                                <td th:text="${'$' + #numbers.formatDecimal(stock.price, 1, 2)}">$150.25</td>
+                                <td class="text-success" th:text="${'+' + #numbers.formatDecimal(stock.dailyChange * 100, 1, 2) + '%'}">+2.34%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Market Cap Distribution
+                </div>
+                <div class="card-body">
+                    <canvas id="marketCapChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts">
+    <script th:src="@{/js/dashboard.js}"></script>
+</th:block>
+</body>
+</html>
