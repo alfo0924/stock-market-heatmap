@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="links"></th:block>
+</head>
+<body>
+<th:block th:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Market Overview</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+                <a href="/dashboard" class="btn btn-sm btn-outline-secondary">Dashboard</a>
+                <a href="/heatmap" class="btn btn-sm btn-outline-secondary">Heatmap</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Market Performance</h5>
+                    <h2 th:text="${#numbers.formatDecimal(marketSummary.averageDailyChange * 100, 1, 2) + '%'}"
+                        th:class="${marketSummary.averageDailyChange >= 0 ? 'text-success' : 'text-danger'}">+1.23%</h2>
+                    <p class="card-text">Average daily change across all stocks</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Market Cap</h5>
+                    <h2 th:text="${'$' + #numbers.formatDecimal(marketSummary.totalMarketCap / 1000000000000L, 1, 2) + 'T'}">$45.67T</h2>
+                    <p class="card-text">Combined market capitalization</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Trading Volume</h5>
+                    <h2 th:text="${#numbers.formatDecimal(marketSummary.totalVolume / 1000000000L, 1, 2) + 'B'}">12.34B</h2>
+                    <p class="card-text">Total shares traded</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Top Gainers
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stock : ${marketSummary.topGainers}">
+                                <td th:text="${stock.symbol}">AAPL</td>
+                                <td th:text="${stock.name}">Apple Inc.</td>
+                                <td th:text="${'$' + #numbers.formatDecimal(stock.price, 1, 2)}">$150.25</td>
+                                <td class="text-success" th:text="${'+' + #numbers.formatDecimal(stock.dailyChange * 100, 1, 2) + '%'}">+2.34%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Top Losers
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="stock : ${marketSummary.topLosers}">
+                                <td th:text="${stock.symbol}">META</td>
+                                <td th:text="${stock.name}">Meta Platforms Inc.</td>
+                                <td th:text="${'$' + #numbers.formatDecimal(stock.price, 1, 2)}">$200.50</td>
+                                <td class="text-danger" th:text="${#numbers.formatDecimal(stock.dailyChange * 100, 1, 2) + '%'}">-1.45%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="scripts"></th:block>
+</body>
+</html>
